@@ -7,8 +7,24 @@ let trial = async () => {
 
     const result = await page.evaluate(() => {
         const servidores = [];
-        document.querySelectorAll('div > section > div > div > ul > li > a')
-            .forEach(servidor => servidores.push(servidor.getAttribute('href')))
+        let lattes, nome, email;
+        document.querySelectorAll('div > section#content-section > div > div.pagina-editoria > ul > li')
+            .forEach(servidor => {
+                if(servidor.children[0]){
+                    nome = servidor.children[0].textContent;
+                    email = servidor.children[1] && servidor.children[1].children[0] && servidor.children[1].children[0].textContent
+
+                    if(servidor.children[0].getAttribute('href')) {
+                        lattes = servidor.children[0].getAttribute('href').split('/'); 
+                    } 
+                    if(lattes[2] && lattes[2].indexOf('lattes.cnpq') !== -1) {
+                        lattes = lattes[(lattes.length - 1)]
+                        servidores.push({lattes, nome, email})
+                    }
+
+                }
+            }
+        )
 
         return servidores;
     })
